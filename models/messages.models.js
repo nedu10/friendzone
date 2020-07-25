@@ -9,10 +9,12 @@ const messageSchema = new Schema(
     user_id: {
       type: String,
       ref: "User",
+      default: null,
     },
     group_id: {
       type: String,
       ref: "Group",
+      default: null,
     },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
