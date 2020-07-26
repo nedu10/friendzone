@@ -4,16 +4,16 @@ const { v4 } = require("uuid");
 
 const messageSchema = new Schema(
   {
-    id: { type: String, default: v4 },
+    _id: { type: String, default: v4 },
     message_body: { type: String, trim: true },
     user_id: {
       type: String,
       ref: "User",
       default: null,
     },
-    group_id: {
+    room_id: {
       type: String,
-      ref: "Group",
+      ref: "Room",
       default: null,
     },
   },

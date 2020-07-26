@@ -4,7 +4,7 @@ const { v4 } = require("uuid");
 
 const user_groupSchema = new Schema(
   {
-    id: { type: String, default: v4 },
+    _id: { type: String, default: v4 },
     user_id: {
       type: String,
       ref: "User",

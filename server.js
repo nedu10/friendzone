@@ -75,6 +75,7 @@ io.on("connection", (socket) => {
         await MessageModel.create({
           user_id: get_user.id,
           room_id: get_room.id,
+          message_body: msg.msg,
         });
         io.to(msg.room.trim()).emit("message", {
           message: msg.msg,
@@ -84,6 +85,31 @@ io.on("connection", (socket) => {
     } catch (error) {
       console.log(error);
     }
+  });
+
+  socket.on("fetchRoomHistory", async (room) => {
+    let get_messages = [];
+    console.log("rom >> ", room);
+
+    const get_room = await RoomModel.findOne({ room_title: room.room });
+    if (get_room) {
+      get_messages = await MessageModel.find({ room_id: get_room.id })
+        .populate("user_id")
+        .populate("user_id");
+    }
+
+    console.log(get_messages);
+
+    const refactor_payload = get_messages.forEach((each) => {
+      let loop_msgs = {
+        bot_name: each.user_id.username,
+        message: each.message_body,
+      };
+
+      socket.emit("message", loop_msgs);
+    });
+
+    return get_messages;
   });
 
   //   io.emit(); //To all the client that is connected

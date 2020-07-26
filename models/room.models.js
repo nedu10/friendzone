@@ -4,7 +4,7 @@ const { v4 } = require("uuid");
 
 const groupSchema = new Schema(
   {
-    id: { type: String, default: v4 },
+    _id: { type: String, default: v4 },
     room_title: { type: String, unique: true, trim: true },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
