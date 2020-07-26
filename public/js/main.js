@@ -12,7 +12,7 @@ console.log(username, room);
 const socket = io(); //setting up connection for socket ion
 
 // fetch all former messages
-socket.emit("fetchRoomHistory", { room });
+// socket.emit("fetchRoomHistory", { room });
 
 // user join room
 socket.emit("joinRoom", { username, room });
@@ -45,7 +45,7 @@ function outputMsg(message) {
   const div = document.createElement("div");
   div.classList.add("message");
   div.innerHTML = `
-    <p class="meta">${message.bot_name} <span>9:12pm</span></p>
+    <p class="meta">${message.bot_name} <span>${message.timeStamp}</span></p>
             <p class="text">
               ${message.message}
             </p>
