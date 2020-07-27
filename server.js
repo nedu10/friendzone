@@ -6,8 +6,10 @@ const MessageModel = require("./models/messages.models");
 
 // import utils
 const { getFetchHistory } = require("./utils/FetchHistory.utils");
+const { createMsg } = require("./utils/CreateMessage.utils");
 
 const path = require("path");
+const moment = require("moment");
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
@@ -52,17 +54,35 @@ io.on("connection", (socket) => {
           room_id: get_room._id,
         });
 
-        socket.emit("message", { bot_name, message: "welcome to friendzone" }); //to single client
+        await createMsg({
+          room: data.room,
+          msg: `${get_user.username} Just join the chat`,
+        });
+
+        socket.emit("message", {
+          bot_name,
+          message: "welcome to friendzone",
+          timeStamp: moment().format("MM-DD-YYYY h:mm a"),
+        }); //to single client
 
         socket.broadcast.to(get_room.room_title).emit("message", {
           bot_name,
           message: `${get_user.username} Just join the chat`,
+          timeStamp: moment().format("MM-DD-YYYY h:mm a"),
         });
       }
 
-      // console.log("get_user_room >> ", get_user_room);
-
       socket.join(get_room.room_title);
+
+      const users = await UserRoomModel.find({
+        room_id: get_room.id,
+      }).populate("user_id");
+
+      // console.log("users >> ", data.room, users);
+
+      io.to(data.room).emit("roomUsers", { room: data.room, users });
+
+      // console.log("get_user_room >> ", get_user_room);
     } catch (error) {
       console.log("error >> ", error);
     }
@@ -72,20 +92,13 @@ io.on("connection", (socket) => {
 
   socket.on("chatMessage", async (msg) => {
     try {
-      console.log("msg >> ", msg);
-      const get_room = await RoomModel.findOne({ room_title: msg.room.trim() });
-      const get_user = await UserModel.findOne({
-        username: msg.username.trim(),
-      });
-      if (get_room && get_user) {
-        await MessageModel.create({
-          user_id: get_user._id,
-          room_id: get_room._id,
-          message_body: msg.msg,
-        });
+      // console.log("msg >> ", msg);
+      const create_msg = await createMsg(msg);
+      if (create_msg.get_room && create_msg.get_user) {
         io.to(msg.room.trim()).emit("message", {
           message: msg.msg,
           bot_name: msg.username,
+          timeStamp: moment().format("MM-DD-YYYY h:mm a"),
         });
       }
     } catch (error) {

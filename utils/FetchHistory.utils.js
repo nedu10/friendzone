@@ -28,7 +28,7 @@ exports.getFetchHistory = async (username, room, socket) => {
 
     const refactor_payload = get_messages.forEach((each) => {
       let loop_msgs = {
-        bot_name: each.user_id.username,
+        bot_name: each.user_id ? each.user_id.username : "zone bot",
         message: each.message_body,
         timeStamp: moment(each.created_at).format("MM-DD-YYYY h:mm a"),
       };
